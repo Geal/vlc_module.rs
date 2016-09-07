@@ -1,0 +1,8 @@
+[package]
+name = "vlc_module"
+version = "0.1.0"
+authors = ["Geoffroy Couprie <geo.couprie@gmail.com>"]
+build = "build.rs"
+
+[dependencies]
+libc = "0.2.0"
