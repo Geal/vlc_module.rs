@@ -77,11 +77,13 @@ pub fn stream_Read(stream: *mut stream_t, buf: &mut [u8]) -> ssize_t {
 }
 
 // FIXME: _stream_Tell and _stream_Seek are not exported by libvlccore, why?
+/*
 pub fn stream_Tell(stream: *mut stream_t) -> uint64_t {
   unsafe {
     ffi::stream_Tell(stream)
   }
 }
+*/
 
 pub fn stream_Seek(stream: *mut stream_t, index: uint64_t) -> bool {
   unsafe {
