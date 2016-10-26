@@ -309,7 +309,7 @@ pub struct es_format_t {
   pub p_extra:           *mut c_void,
 }
 
-#[link(name = "vlccore")]
+#[cfg_attr(feature = "link-vlc", link(name = "vlccore"))]
 extern {
   pub fn stream_Peek(stream: *mut stream_t, buf: *mut *const uint8_t, size: size_t) -> ssize_t;
 
