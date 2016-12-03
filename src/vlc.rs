@@ -1,10 +1,12 @@
 #![allow(non_snake_case)]
 
-use libc::{uint8_t, uint64_t, int64_t, size_t, ssize_t, c_void, c_int};
+//use libc::{uint8_t, uint64_t, int64_t, size_t, ssize_t, c_void, c_int};
+use libc::{uint8_t, uint16_t, uint32_t, uint64_t, int64_t, size_t, ssize_t, c_void, c_int, c_uint, c_char,
+           c_float};
 use std::slice::from_raw_parts;
 
-pub use ffi::{VLCModuleProperties,vlc_Log,demux_t,vlc_object_t, va_list, block_t, mtime_t, es_format_t,
-                vlc_fourcc_t, es_out_t, es_out_id_t};
+pub use ffi::{vlc_module_properties,vlc_Log,vlc_object_t, va_list, block_t, mtime_t, es_format_t,
+                vlc_fourcc_t, es_out_t, es_out_id_t, input_thread_t, module_t, libvlc_int_t};
 
 use ffi::{self, stream_t, es_format_category_e};
 
@@ -18,44 +20,52 @@ macro_rules! vlc_module {
                                   opaque: *mut c_void) -> c_int {
       let module: *mut c_void = 0 as *mut c_void;
 
-      if vlc_set(opaque, 0 as *mut c_void, $crate::vlc::VLCModuleProperties::VLC_MODULE_CREATE as i32,
+      if vlc_set(opaque, 0 as *mut c_void, $crate::vlc::vlc_module_properties::VLC_MODULE_CREATE as i32,
       &module) != 0 {
         return -1;
       }
 
-      if vlc_set(opaque, module, $crate::vlc::VLCModuleProperties::VLC_MODULE_NAME as i32,
+      if vlc_set(opaque, module, $crate::vlc::vlc_module_properties::VLC_MODULE_NAME as i32,
       concat!($name, "\0").as_ptr()) != 0 {
         return -1;
       }
 
-      if vlc_set(opaque, module, $crate::vlc::VLCModuleProperties::VLC_MODULE_DESCRIPTION as i32,
+      if vlc_set(opaque, module, $crate::vlc::vlc_module_properties::VLC_MODULE_DESCRIPTION as i32,
       concat!($desc, "\0").as_ptr()) != 0 {
         return -1;
       }
 
-      if vlc_set(opaque, module, $crate::vlc::VLCModuleProperties::VLC_MODULE_CAPABILITY as i32,
+      if vlc_set(opaque, module, $crate::vlc::vlc_module_properties::VLC_MODULE_CAPABILITY as i32,
       concat!($cap, "\0").as_ptr()) != 0 {
         return -1;
       }
 
-      if vlc_set(opaque, module, $crate::vlc::VLCModuleProperties::VLC_MODULE_SCORE as i32, $score) != 0 {
+      if vlc_set(opaque, module, $crate::vlc::vlc_module_properties::VLC_MODULE_SCORE as i32, $score) != 0 {
         return -1;
       }
 
       let p_open: extern "C" fn(*mut demux_t<demux_sys_t>) -> c_int =
         transmute($open as extern "C" fn(_) -> c_int);
-      if vlc_set(opaque, module, $crate::vlc::VLCModuleProperties::VLC_MODULE_CB_OPEN as i32, p_open) != 0 {
+      if vlc_set(opaque, module, $crate::vlc::vlc_module_properties::VLC_MODULE_CB_OPEN as i32, p_open) != 0 {
         return -1;
       }
 
       let p_close: extern "C" fn(*mut demux_t<demux_sys_t>) = transmute($close as extern "C" fn(_));
-      if vlc_set(opaque, module, $crate::vlc::VLCModuleProperties::VLC_MODULE_CB_CLOSE as i32, p_close) != 0 {
+      if vlc_set(opaque, module, $crate::vlc::vlc_module_properties::VLC_MODULE_CB_CLOSE as i32, p_close) != 0 {
         return -1;
       }
       0
     }
   );
 }
+
+#[macro_export]
+macro_rules! vlc_fourcc (
+  ($a: expr, $b: expr, $c: expr, $d: expr) => {
+    $a as uint32_t | (($b as uint32_t) << 8) |
+      (($c as uint32_t) << 16) | (($d as uint32_t) << 24)
+  }
+);
 
 pub fn stream_Peek<'a>(stream: *mut stream_t, size: size_t) -> &'a[u8] {
   let mut buf = 0 as *const uint8_t;
@@ -113,10 +123,43 @@ pub fn es_out_Add(out: *mut es_out_t, fmt: *mut es_format_t) -> *mut es_out_id_t
 
 pub fn demux_vaControlHelper(stream: *mut stream_t, i_start: int64_t, i_end: int64_t,
                              i_bitrate: int64_t, i_align: c_int, i_query: c_int,
-                             args: *const va_list) -> c_int {
+                             args: va_list) -> c_int {
   unsafe {
     ffi::demux_vaControlHelper(stream, i_start, i_end, i_bitrate, i_align, i_query, args)
   }
+}
+
+#[repr(C)]
+pub struct demux_t<T> {
+  //VLC_COMMON_MEMBERS
+  pub psz_object_type: *const c_char,
+  pub psz_header:      *mut c_char,
+  pub i_flags:         c_int,
+  pub b_force:         bool,
+  pub p_libvlc:        *mut libvlc_int_t,
+  pub p_parent:        *mut vlc_object_t,
+
+  pub p_module:        *mut module_t,
+
+  pub psz_access:      *mut c_char,
+  pub psz_demux:       *mut c_char,
+  pub psz_location:    *mut c_char,
+  pub psz_file:        *mut c_char,
+
+  pub s:               *mut stream_t,
+  pub out:             *mut es_out_t,
+  pub pf_demux:        Option<extern "C" fn(*mut demux_t<T>) -> c_int>,
+  pub pf_control:      Option<extern "C" fn(*mut demux_t<T>, c_int, va_list) -> c_int>,
+
+  // 'info' nested struct. Can we do that with Rust FFI?
+  pub i_update:        c_uint,
+  pub i_title:         c_int,
+  pub i_seekpoint:     c_int,
+
+  //FIXME: p_sys contains a pointer to a module specific structure, make it generic?
+  pub p_sys:           *mut T,
+
+  pub p_input:         *mut input_thread_t,
 }
 
 pub trait VLCObject {}

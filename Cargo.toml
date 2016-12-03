@@ -4,9 +4,14 @@ version = "0.1.0"
 authors = ["Geoffroy Couprie <geo.couprie@gmail.com>"]
 build = "build.rs"
 
-[dependencies]
-libc = "0.2.0"
-
 [features]
 link-vlc = []
 default = ["link-vlc"]
+
+[dependencies]
+libc = "^0.2.0"
+
+[build-dependencies.libbindgen]
+git = "https://github.com/servo/rust-bindgen"
+features = ["llvm_stable"]
+
