@@ -10,6 +10,8 @@ pub use ffi::{vlc_module_properties,vlc_Log,vlc_object_t, va_list, block_t, mtim
 
 use ffi::{self, stream_t, es_format_category_e};
 
+pub const VLC_TS_0: mtime_t = 1;
+
 #[macro_export]
 macro_rules! vlc_module {
   ($fn_name:ident, set_name($name:expr) set_description($desc:expr) set_capability($cap:expr, $score:expr) set_callbacks($open:expr, $close:expr)) => (

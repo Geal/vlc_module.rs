@@ -9,6 +9,7 @@ fn main() {
     .whitelisted_type("vlc_fourcc_t")
     .whitelisted_type("mtime_t")
     .whitelisted_type("es_out_id_t")
+    .hide_type("demux_t")
     .use_core()
     .generate().unwrap()
     .write_to_file("src/ffi/common.rs");
@@ -77,4 +78,12 @@ fn main() {
     .use_core()
     .generate().unwrap()
     .write_to_file("src/ffi/es.rs");
+
+  let _ = libbindgen::builder()
+    .clang_arg("-I include/")
+    .header("include/vlc_es_out.h")
+    .whitelisted_type("es_out_query_e")
+    .use_core()
+    .generate().unwrap()
+    .write_to_file("src/ffi/es_out.rs");
 }
