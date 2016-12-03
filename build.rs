@@ -61,7 +61,7 @@ fn main() {
     .hide_type("va_list")
     .raw_line("use ffi::definitions::va_list;")
     .raw_line("use ffi::stream::stream_t;")
-    .raw_line("use ffi::common::{vlc_fourcc_t,es_out_id_t};")
+    .raw_line("use ffi::common::es_out_id_t;")
     .raw_line("use ffi::es::es_format_t;")
     .raw_line("use ffi::definitions::block_t;")
     .use_core()

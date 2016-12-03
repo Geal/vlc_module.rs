@@ -1,8 +1,6 @@
 #![allow(non_snake_case)]
 
-//use libc::{uint8_t, uint64_t, int64_t, size_t, ssize_t, c_void, c_int};
-use libc::{uint8_t, uint16_t, uint32_t, uint64_t, int64_t, size_t, ssize_t, c_void, c_int, c_uint, c_char,
-           c_float};
+use libc::{uint8_t, uint64_t, int64_t, size_t, ssize_t, c_void, c_int, c_uint, c_char};
 use std::slice::from_raw_parts;
 
 pub use ffi::{vlc_module_properties,vlc_Log,vlc_object_t, va_list, block_t, mtime_t, es_format_t,
