@@ -3,9 +3,11 @@ extern crate libbindgen;
 fn main() {
   //look for libvlccore in the current directory while in development
   println!("cargo:rustc-link-search=native=.");
+  let include_arg = concat!("-I", env!("INCLUDE_DIR"));
+
   let _ = libbindgen::builder()
-    .clang_arg("-I include/")
-    .header("include/vlc_common.h")
+    .clang_arg(include_arg)
+    .header(concat!(env!("INCLUDE_DIR"), "/vlc_common.h"))
     .whitelisted_type("vlc_fourcc_t")
     .whitelisted_type("mtime_t")
     .whitelisted_type("es_out_id_t")
@@ -15,8 +17,8 @@ fn main() {
     .write_to_file("src/ffi/common.rs");
 
   let _ = libbindgen::builder()
-    .clang_arg("-I include/")
-    .header("include/vlc_plugin.h")
+    .clang_arg(include_arg)
+    .header(concat!(env!("INCLUDE_DIR"), "/vlc_plugin.h"))
     .whitelisted_type("vlc_module_properties")
     .use_core()
     .generate().unwrap()
@@ -24,8 +26,8 @@ fn main() {
 
 /*
   let _ = libbindgen::builder()
-    .clang_arg("-I include/")
-    .header("include/vlc_block.h")
+    .clang_arg(include_arg)
+    .header(concat!(env!("INCLUDE_DIR"), "/vlc_block.h"))
     //.whitelisted_type("block_t")
     .opaque_type("mtime_t")
     .hide_type("va_list")
@@ -38,8 +40,8 @@ fn main() {
 
 
   let _ = libbindgen::builder()
-    .clang_arg("-I include/")
-    .header("include/vlc_stream.h")
+    .clang_arg(include_arg)
+    .header(concat!(env!("INCLUDE_DIR"), "/vlc_stream.h"))
     .whitelisted_type("stream_t")
     .whitelisted_function("stream_Read")
     .whitelisted_function("stream_Tell")
@@ -49,8 +51,8 @@ fn main() {
     .write_to_file("src/ffi/stream.rs");
 
   let _ = libbindgen::builder()
-    .clang_arg("-I include/")
-    .header("include/vlc_demux.h")
+    .clang_arg(include_arg)
+    .header(concat!(env!("INCLUDE_DIR"), "/vlc_demux.h"))
     .whitelisted_function("demux_New")
     .whitelisted_function("demux_vaControlHelper")
     .hide_type("stream_t")
@@ -69,8 +71,8 @@ fn main() {
     .write_to_file("src/ffi/demux.rs");
 
   let _ = libbindgen::builder()
-    .clang_arg("-I include/")
-    .header("include/vlc_es.h")
+    .clang_arg(include_arg)
+    .header(concat!(env!("INCLUDE_DIR"), "/vlc_es.h"))
     .whitelisted_function("es_format_Init")
     .whitelisted_type("es_format_category_e")
     .hide_type("vlc_fourcc_t")
@@ -80,8 +82,8 @@ fn main() {
     .write_to_file("src/ffi/es.rs");
 
   let _ = libbindgen::builder()
-    .clang_arg("-I include/")
-    .header("include/vlc_es_out.h")
+    .clang_arg(include_arg)
+    .header(concat!(env!("INCLUDE_DIR"), "/vlc_es_out.h"))
     .whitelisted_type("es_out_query_e")
     .use_core()
     .generate().unwrap()
