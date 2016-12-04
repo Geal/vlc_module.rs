@@ -6,3 +6,5 @@ src/ffi/demux.rs
 src/ffi/es.rs
 src/ffi/plugin.rs
 src/ffi/stream.rs
+src/ffi/es_out.rs
+src/macros.rs

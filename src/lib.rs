@@ -4,6 +4,9 @@ extern crate libc;
 extern crate core;
 
 #[macro_use]
+pub mod macros;
+
+#[macro_use]
 pub mod vlc;
 
 #[macro_use]

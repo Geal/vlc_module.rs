@@ -1,4 +1,7 @@
 extern crate libbindgen;
+use std::fs::File;
+use std::io::Write;
+use std::path::Path;
 
 fn main() {
   //look for libvlccore in the current directory while in development
@@ -88,4 +91,58 @@ fn main() {
     .use_core()
     .generate().unwrap()
     .write_to_file("src/ffi/es_out.rs");
+
+  let dest_path = Path::new("src/macros.rs");
+  let mut f = File::create(&dest_path).unwrap();
+
+  let macros = concat!("#[macro_export]
+macro_rules! vlc_module {
+  (set_name($name:expr) set_description($desc:expr) set_capability($cap:expr, $score:expr) set_callbacks($open:expr, $close:expr)) => (
+    #[allow(non_snake_case)]
+    #[no_mangle]
+    pub unsafe extern fn vlc_entry__", env!("VLC_VERSION"), "(vlc_set: unsafe extern fn(*mut c_void, *mut c_void, c_int, ...)
+                                  -> c_int,
+                                  opaque: *mut c_void) -> c_int {
+      let module: *mut c_void = 0 as *mut c_void;
+
+      if vlc_set(opaque, 0 as *mut c_void, $crate::vlc::vlc_module_properties::VLC_MODULE_CREATE as i32,
+      &module) != 0 {
+        return -1;
+      }
+
+      if vlc_set(opaque, module, $crate::vlc::vlc_module_properties::VLC_MODULE_NAME as i32,
+      concat!($name, \"\\0\").as_ptr()) != 0 {
+        return -1;
+      }
+
+      if vlc_set(opaque, module, $crate::vlc::vlc_module_properties::VLC_MODULE_DESCRIPTION as i32,
+      concat!($desc, \"\\0\").as_ptr()) != 0 {
+        return -1;
+      }
+
+      if vlc_set(opaque, module, $crate::vlc::vlc_module_properties::VLC_MODULE_CAPABILITY as i32,
+      concat!($cap, \"\\0\").as_ptr()) != 0 {
+        return -1;
+      }
+
+      if vlc_set(opaque, module, $crate::vlc::vlc_module_properties::VLC_MODULE_SCORE as i32, $score) != 0 {
+        return -1;
+      }
+
+      let p_open: extern \"C\" fn(*mut demux_t<demux_sys_t>) -> c_int =
+        transmute($open as extern \"C\" fn(_) -> c_int);
+      if vlc_set(opaque, module, $crate::vlc::vlc_module_properties::VLC_MODULE_CB_OPEN as i32, p_open) != 0 {
+        return -1;
+      }
+
+      let p_close: extern \"C\" fn(*mut demux_t<demux_sys_t>) = transmute($close as extern \"C\" fn(_));
+      if vlc_set(opaque, module, $crate::vlc::vlc_module_properties::VLC_MODULE_CB_CLOSE as i32, p_close) != 0 {
+        return -1;
+      }
+      0
+    }
+  );
+}
+    ");
+  f.write_all(macros.as_bytes()).unwrap();
 }
