@@ -1,4 +1,4 @@
-extern crate libbindgen;
+extern crate bindgen;
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
@@ -8,7 +8,7 @@ fn main() {
   println!("cargo:rustc-link-search=native=.");
   let include_arg = concat!("-I", env!("INCLUDE_DIR"));
 
-  let _ = libbindgen::builder()
+  let _ = bindgen::builder()
     .clang_arg(include_arg)
     .header(concat!(env!("INCLUDE_DIR"), "/vlc_common.h"))
     .whitelisted_type("vlc_fourcc_t")
@@ -19,7 +19,7 @@ fn main() {
     .generate().unwrap()
     .write_to_file("src/ffi/common.rs");
 
-  let _ = libbindgen::builder()
+  let _ = bindgen::builder()
     .clang_arg(include_arg)
     .header(concat!(env!("INCLUDE_DIR"), "/vlc_plugin.h"))
     .whitelisted_type("vlc_module_properties")
@@ -28,7 +28,7 @@ fn main() {
     .write_to_file("src/ffi/plugin.rs");
 
 /*
-  let _ = libbindgen::builder()
+  let _ = bindgen::builder()
     .clang_arg(include_arg)
     .header(concat!(env!("INCLUDE_DIR"), "/vlc_block.h"))
     //.whitelisted_type("block_t")
@@ -42,7 +42,7 @@ fn main() {
   */
 
 
-  let _ = libbindgen::builder()
+  let _ = bindgen::builder()
     .clang_arg(include_arg)
     .header(concat!(env!("INCLUDE_DIR"), "/vlc_stream.h"))
     .whitelisted_type("stream_t")
@@ -53,7 +53,7 @@ fn main() {
     .generate().unwrap()
     .write_to_file("src/ffi/stream.rs");
 
-  let _ = libbindgen::builder()
+  let _ = bindgen::builder()
     .clang_arg(include_arg)
     .header(concat!(env!("INCLUDE_DIR"), "/vlc_demux.h"))
     .whitelisted_function("demux_New")
@@ -73,7 +73,7 @@ fn main() {
     .generate().unwrap()
     .write_to_file("src/ffi/demux.rs");
 
-  let _ = libbindgen::builder()
+  let _ = bindgen::builder()
     .clang_arg(include_arg)
     .header(concat!(env!("INCLUDE_DIR"), "/vlc_es.h"))
     .whitelisted_function("es_format_Init")
@@ -84,7 +84,7 @@ fn main() {
     .generate().unwrap()
     .write_to_file("src/ffi/es.rs");
 
-  let _ = libbindgen::builder()
+  let _ = bindgen::builder()
     .clang_arg(include_arg)
     .header(concat!(env!("INCLUDE_DIR"), "/vlc_es_out.h"))
     .whitelisted_type("es_out_query_e")
