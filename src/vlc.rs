@@ -1,6 +1,7 @@
 #![allow(non_snake_case)]
 
-use libc::{uint8_t, uint64_t, int64_t, size_t, ssize_t, c_void, c_int, c_uint, c_char};
+use libc::{uint8_t, uint64_t, int64_t, size_t, ssize_t, c_int, c_uint, c_char};
+use std::os::raw::c_void;
 use std::slice::from_raw_parts;
 
 pub use ffi::{vlc_module_properties,vlc_Log,vlc_object_t, va_list, block_t, mtime_t, es_format_t,
@@ -33,7 +34,7 @@ pub fn stream_Peek<'a>(stream: *mut stream_t, size: size_t) -> &'a[u8] {
 
 pub fn stream_Read(stream: *mut stream_t, buf: &mut [u8]) -> ssize_t {
   unsafe {
-    ffi::stream_Read(stream, buf.as_mut_ptr() as *const c_void, buf.len())
+    ffi::stream_Read(stream, buf.as_mut_ptr() as *mut c_void, buf.len())
   }
 }
 
@@ -48,7 +49,7 @@ pub fn stream_Tell(stream: *mut stream_t) -> uint64_t {
 
 pub fn stream_Seek(stream: *mut stream_t, index: uint64_t) -> bool {
   unsafe {
-    ffi::stream_Read(stream, 0 as *const c_void, index as size_t) == index as ssize_t
+    ffi::stream_Read(stream, 0 as *mut c_void, index as size_t) == index as ssize_t
   }
 }
 

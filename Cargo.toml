@@ -11,8 +11,9 @@ default = ["link-vlc"]
 [dependencies]
 libc = "^0.2.0"
 
-[build-dependencies]
-bindgen = "^0.20"
+[build-dependencies.bindgen]
+version = "^0.20"
+features = ["llvm_stable"]
 
 #[build-dependencies.libbindgen]
 #git = "https://github.com/servo/rust-bindgen"
