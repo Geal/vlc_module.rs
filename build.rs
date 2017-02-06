@@ -54,7 +54,6 @@ fn main() {
     .generate().unwrap()
     .write_to_file("src/ffi/block.rs");
 
-  //ACCESS done
   let _ = bindgen::builder()
     .clang_arg(include_arg)
     .clang_arg("-include")
@@ -65,6 +64,7 @@ fn main() {
     .hide_type("libvlc_int_t")
     .hide_type("block_t")
     .hide_type("input_thread_t")
+    .hide_type("va_list")
     .whitelist_recursively(true)
     .whitelisted_type("access_query_e")
     .whitelisted_type("access_t")
@@ -82,9 +82,10 @@ fn main() {
     .whitelisted_function("access_fsdir_init")
     .whitelisted_function("access_fsdir_finish")
     .whitelisted_function("access_fsdir_additem")
-    .raw_line("use ffi::common::vlc_object_t;")
-    .raw_line("use ffi::common::module_t;")
-    .raw_line("use ffi::common::libvlc_int_t;")
+    .raw_line("use ffi::common::{vlc_object_t,module_t,libvlc_int_t};")
+    .raw_line("use ffi::definitions::{va_list,__va_list_tag};")
+    .raw_line("use ffi::block::block_t;")
+    .raw_line("use ffi::input::input_thread_t;")
     .use_core()
     .generate().unwrap()
     .write_to_file("src/ffi/access.rs");
@@ -137,6 +138,8 @@ fn main() {
     .hide_type("vlc_object_t")
     .hide_type("libvlc_int_t")
     .hide_type("block_t")
+    .hide_type("mtime_t")
+    .hide_type("vlc_fourcc_t")
     .whitelist_recursively(true)
     .whitelisted_type("audio_output")
     .whitelisted_type("audio_filters_t")
@@ -178,6 +181,8 @@ fn main() {
     .raw_line("use ffi::common::vlc_object_t;")
     .raw_line("use ffi::common::module_t;")
     .raw_line("use ffi::common::libvlc_int_t;")
+    .raw_line("use ffi::common::{mtime_t,vlc_fourcc_t};")
+    .raw_line("use ffi::block::block_t;")
     .use_core()
     .generate().unwrap()
     .write_to_file("src/ffi/aout.rs");
@@ -198,6 +203,7 @@ fn main() {
     .raw_line("use ffi::common::module_t;")
     .raw_line("use ffi::common::libvlc_int_t;")
     .raw_line("use ffi::common::vlc_fourcc_t;")
+    .raw_line("use ffi::block::block_t;")
     .use_core()
     .generate().unwrap()
     .write_to_file("src/ffi/aout_volume.rs");

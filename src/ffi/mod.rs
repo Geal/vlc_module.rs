@@ -1,7 +1,11 @@
 mod common;
+mod access;
+mod aout;
+mod aout_volume;
+mod arrays;
+mod block;
 mod plugin;
 mod definitions;
-mod block;
 mod input;
 mod stream;
 mod demux;
@@ -9,9 +13,13 @@ mod es;
 //mod es_out;
 
 pub use self::common::*;
+pub use self::access::*;
+pub use self::aout::*;
+pub use self::aout_volume::*;
+pub use self::arrays::*;
+pub use self::block::*;
 pub use self::plugin::*;
 pub use self::definitions::*;
-pub use self::block::*;
 pub use self::input::*;
 pub use self::demux::*;
 pub use self::stream::*;
