@@ -1,5 +1,8 @@
 target
 Cargo.lock
+src/ffi/access.rs
+src/ffi/addons.rs
+src/ffi/aout.rs
 src/ffi/block.rs
 src/ffi/common.rs
 src/ffi/demux.rs
@@ -7,4 +10,5 @@ src/ffi/es.rs
 src/ffi/plugin.rs
 src/ffi/stream.rs
 src/ffi/es_out.rs
+src/ffi/input.rs
 src/macros.rs
