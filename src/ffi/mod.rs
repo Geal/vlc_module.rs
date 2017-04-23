@@ -8,10 +8,10 @@ mod block;
 mod plugin;
 mod definitions;
 mod input;
-mod stream;
+pub mod stream;
 mod demux;
 mod es;
-//mod es_out;
+mod es_out;
 
 pub use self::common::*;
 pub use self::access::*;
@@ -26,4 +26,4 @@ pub use self::input::*;
 pub use self::demux::*;
 pub use self::stream::*;
 pub use self::es::*;
-//pub use self::es_out::*;
+pub use self::es_out::*;

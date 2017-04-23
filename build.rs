@@ -14,11 +14,11 @@ fn main() {
     .header(vlc_common_path)
     .whitelisted_type("vlc_fourcc_t")
     .whitelisted_type("mtime_t")
-    .whitelisted_type("es_out_id_t")
     .whitelisted_type("libvlc_int_t")
     .whitelisted_type("module_t")
     .whitelisted_type("vlc_object_t")
     .hide_type("demux_t")
+    .hide_type("es_out_id_t")
     .use_core()
     .generate().unwrap()
     .write_to_file("src/ffi/common.rs");
@@ -369,15 +369,16 @@ fn main() {
     .hide_type("input_thread_t")
     .hide_type("vlc_object_t")
     .hide_type("libvlc_int_t")
+    .hide_type("es_out_t")
     .raw_line("use ffi::definitions::{va_list,__va_list_tag};")
     .raw_line("use ffi::stream::stream_t;")
-    .raw_line("use ffi::common::es_out_id_t;")
     .raw_line("use ffi::common::vlc_object_t;")
     .raw_line("use ffi::common::module_t;")
     .raw_line("use ffi::common::libvlc_int_t;")
     .raw_line("use ffi::es::es_format_t;")
     .raw_line("use ffi::block::block_t;")
     .raw_line("use ffi::input::input_thread_t;")
+    .raw_line("use ffi::es_out::{es_out_t, es_out_id_t};")
     .use_core()
     .generate().unwrap()
     .write_to_file("src/ffi/demux.rs");
@@ -389,21 +390,30 @@ fn main() {
     .header(concat!(env!("INCLUDE_DIR"), "/vlc_es.h"))
     .whitelisted_function("es_format_Init")
     .whitelisted_type("es_format_category_e")
+    .whitelisted_type("es_format_t")
     .hide_type("vlc_fourcc_t")
     .raw_line("use ffi::common::vlc_fourcc_t;")
     .use_core()
     .generate().unwrap()
     .write_to_file("src/ffi/es.rs");
 
-  /*
   let _ = bindgen::builder()
     .clang_arg(include_arg)
+    .clang_arg("-include")
+    .clang_arg(vlc_common_path)
     .header(concat!(env!("INCLUDE_DIR"), "/vlc_es_out.h"))
+    .whitelisted_type("es_out_t")
     .whitelisted_type("es_out_query_e")
+    .whitelisted_type("es_out_id_t")
+    .hide_type("es_format_t")
+    .hide_type("block_t")
+    .hide_type("va_list")
+    .raw_line("use ffi::definitions::{va_list,__va_list_tag};")
+    .raw_line("use ffi::es::es_format_t;")
+    .raw_line("use ffi::block::block_t;")
     .use_core()
     .generate().unwrap()
     .write_to_file("src/ffi/es_out.rs");
-  */
 
   let dest_path = Path::new("src/macros.rs");
   let mut f = File::create(&dest_path).unwrap();
