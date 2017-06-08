@@ -12,5 +12,5 @@ default = ["link-vlc"]
 libc = "^0.2.0"
 
 [build-dependencies.bindgen]
-version = "^0.23"
+version = "^0.25"
 
