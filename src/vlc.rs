@@ -8,7 +8,7 @@ pub use ffi::{vlc_module_properties,vlc_Log,vlc_object_t, va_list, block_t, mtim
                 vlc_fourcc_t, es_out_t, es_out_id_t, input_thread_t, module_t, libvlc_int_t};
 
 use ffi::{self, es_format_category_e};
-use ffi::stream::stream_t;
+use ffi::stream_t;
 
 pub const VLC_TS_0: mtime_t = 1;
 
@@ -23,7 +23,7 @@ macro_rules! vlc_fourcc (
 pub fn stream_Peek<'a>(stream: *mut stream_t, size: size_t) -> &'a[u8] {
   let mut buf = 0 as *const uint8_t;
   unsafe {
-    let sz = ffi::stream::stream_Peek(stream, &mut buf, size);
+    let sz = ffi::vlc_stream_Peek(stream, &mut buf, size);
     // FIXME: what if returned sz is negative? (error)
     if sz > 0 {
       from_raw_parts(buf, sz as usize)
@@ -35,7 +35,7 @@ pub fn stream_Peek<'a>(stream: *mut stream_t, size: size_t) -> &'a[u8] {
 
 pub fn stream_Read(stream: *mut stream_t, buf: &mut [u8]) -> ssize_t {
   unsafe {
-    ffi::stream::stream_Read(stream, buf.as_mut_ptr() as *mut c_void, buf.len())
+    ffi::vlc_stream_Read(stream, buf.as_mut_ptr() as *mut c_void, buf.len())
   }
 }
 
@@ -43,20 +43,20 @@ pub fn stream_Read(stream: *mut stream_t, buf: &mut [u8]) -> ssize_t {
 /*
 pub fn stream_Tell(stream: *mut stream_t) -> uint64_t {
   unsafe {
-    ffi::stream_Tell(stream)
+    ffi_Tell(stream)
   }
 }
 */
 
 pub fn stream_Seek(stream: *mut stream_t, index: uint64_t) -> bool {
   unsafe {
-    ffi::stream::stream_Read(stream, 0 as *mut c_void, index as size_t) == index as ssize_t
+    ffi::vlc_stream_Read(stream, 0 as *mut c_void, index as size_t) == index as ssize_t
   }
 }
 
 pub fn stream_Block(stream: *mut stream_t, size: size_t) -> *mut block_t {
   unsafe {
-    ffi::stream::stream_Block(stream, size)
+    ffi::vlc_stream_Block(stream, size)
   }
 }
 
